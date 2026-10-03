@@ -22,10 +22,10 @@ export function edytorStrony(req, path) {
 }
 
 // wywoływane z routera redakcji, po sprawdzeniu klucza i tokenu GitHub
-export async function edytorApi(req, env, path, json) {
+export async function edytorApi(req, env, path, json, rola = 'admin') {
   if (req.method === 'GET' && path === '/redakcja/zrodlo') {
     const { sha, tresc } = await ghPobierz(env);
-    return json(req, { sha, html: tresc });
+    return json(req, { sha, html: tresc, rola });
   }
 
   if (req.method === 'POST' && path === '/redakcja/publikuj-html') {

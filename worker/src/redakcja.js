@@ -3,6 +3,7 @@
 // jako commit na GitHub (GitHub Pages wdraża w ok. minutę). Każdą zmianę da się cofnąć.
 
 import { edytorApi } from './edytor.js';
+import { pisarzApi, PISARZ_DOZWOLONE } from './pisarz.js';
 
 const GH = { owner: 'gicaking', repo: 'osiedle-przyjazn', branch: 'master', plik: 'index.html' };
 const MODEL = 'claude-opus-5';
@@ -345,11 +346,21 @@ export async function redakcja(req, env, path, json) {
     return new Response(REDAKCJA_HTML, { headers: { 'Content-Type': 'text/html; charset=utf-8' } });
   }
   const klucz = req.headers.get('X-Admin-Key') || '';
-  if (!klucz || (klucz !== env.ADMIN_KEY && klucz !== env.REDAKCJA_KEY)) return json(req, { blad: 'Zły klucz redakcji.' }, 403);
+  // rola: admin (wszystko), redakcja (edycja i publikacja), pisarz (tylko czytanie, bot i propozycje jako pull request)
+  const rola = !klucz ? null
+    : klucz === env.ADMIN_KEY ? 'admin'
+    : (env.REDAKCJA_KEY && klucz === env.REDAKCJA_KEY) ? 'redakcja'
+    : (env.PISARZ_KEY && klucz === env.PISARZ_KEY) ? 'pisarz'
+    : null;
+  if (!rola) return json(req, { blad: 'Zły klucz redakcji.' }, 403);
+  if (rola === 'pisarz' && !PISARZ_DOZWOLONE.has(path)) return json(req, { blad: 'Klucz pisarza pozwala tylko czytać kod, pytać bota i wysyłać propozycje do gospodarza (pull request).' }, 403);
   if (!env.GITHUB_TOKEN) return json(req, { blad: 'Brak GITHUB_TOKEN w sekretach workera.' }, 500);
 
   try {
-    const zEdytora = await edytorApi(req, env, path, json);
+    const zPisarza = await pisarzApi(req, env, path, json, rola);
+    if (zPisarza) return zPisarza;
+
+    const zEdytora = await edytorApi(req, env, path, json, rola);
     if (zEdytora) return zEdytora;
 
     if (req.method === 'GET' && path === '/redakcja/bot') {

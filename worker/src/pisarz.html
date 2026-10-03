@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="pl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pisarz strony osiedla</title><meta name="robots" content="noindex">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/codemirror.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/addon/dialog/dialog.min.css">
+<style>
+  :root{--tynk:#F3F4EE;--smola:#24322B;--zolty:#F2C94C;--czerwony:#BF4630;--sosna:#3E6B48;--papier:#FBFBF7;--deska:#A9743A}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,sans-serif;background:var(--tynk);color:var(--smola);line-height:1.45;height:100vh;display:flex;flex-direction:column}
+  button{background:var(--zolty);color:var(--smola);border:2px solid var(--smola);border-radius:9px;padding:7px 13px;font-size:.95rem;font-weight:700;cursor:pointer;box-shadow:2px 2px 0 var(--smola)}
+  button.cichy{background:var(--papier);font-weight:600}
+  button.zielony{background:var(--sosna);color:#fff}
+  button:disabled{opacity:.45;cursor:not-allowed;box-shadow:none}
+  input,textarea{padding:9px;border:1.5px solid var(--smola);border-radius:8px;font-size:1rem;background:var(--papier);width:100%}
+  textarea{resize:vertical;min-height:52px;font-family:inherit}
+  .blad{color:var(--czerwony);font-weight:600}
+  .ok{color:var(--sosna);font-weight:600}
+  a{color:var(--sosna)}
+  /* logowanie */
+  #logowanie{max-width:560px;margin:40px auto;padding:0 20px}
+  #logowanie h1{font-size:1.5rem;margin:0 0 6px}
+  #logowanie label{display:block;margin-top:14px;font-weight:600}
+  #logowanie p.pod{opacity:.75}
+  /* warsztat */
+  #warsztat{display:none;flex:1;min-height:0;flex-direction:column}
+  #pasek{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:8px 12px;background:var(--papier);border-bottom:2px solid var(--smola)}
+  #pasek .tytul{font-weight:800;margin-right:auto}
+  #pasek .tytul small{font-weight:500;opacity:.7}
+  #status{font-size:.9rem;min-height:1.2em;padding:4px 12px}
+  #glowne{flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr}
+  #kod{min-height:0;border-right:2px solid var(--smola)}
+  .CodeMirror{height:100%;font-size:13px;font-family:ui-monospace,Menlo,Consolas,monospace}
+  #prawa{display:flex;flex-direction:column;min-height:0}
+  #zakladki{display:flex;gap:4px;padding:6px 8px 0;background:var(--papier)}
+  #zakladki button{box-shadow:none;border-bottom:none;border-radius:8px 8px 0 0;background:var(--tynk);font-weight:600}
+  #zakladki button.aktywna{background:#fff}
+  #panele{flex:1;min-height:0;background:#fff;position:relative}
+  #panele>div{position:absolute;inset:0;overflow:auto;display:none}
+  #panele>div.aktywna{display:block}
+  #podglad{width:100%;height:100%;border:0}
+  #zmiany{padding:10px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12.5px;white-space:pre-wrap;word-break:break-all}
+  #zmiany .plus{background:#dff5de}
+  #zmiany .minus{background:#fde0dc;text-decoration:line-through;text-decoration-color:#b55}
+  #zmiany .sep{color:#888;border-top:1px dashed #bbb;margin:6px 0;padding-top:4px}
+  #zmiany .pod{font-family:system-ui,sans-serif;opacity:.7}
+  #bot{display:flex;gap:8px;align-items:flex-start;padding:8px 12px;background:var(--papier);border-top:2px solid var(--smola)}
+  #bot textarea{flex:1}
+  #bot .info{font-size:.85rem;opacity:.75;max-width:260px}
+  /* dialog wysyłki */
+  dialog{border:2px solid var(--smola);border-radius:12px;padding:20px;max-width:520px;width:92vw;background:var(--papier)}
+  dialog::backdrop{background:rgba(36,50,43,.55)}
+  dialog label{display:block;font-weight:600;margin-top:12px}
+  dialog .przyciski{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
+  dialog ul{margin:8px 0;padding-left:20px}
+  @media (max-width:900px){
+    #glowne{grid-template-columns:1fr;grid-template-rows:1fr 1fr}
+    #kod{border-right:0;border-bottom:2px solid var(--smola)}
+    #bot .info{display:none}
+  }
+</style></head><body>
+
+<section id="logowanie">
+  <h1>⌨️ Pisarz strony osiedleprzyjazn.waw.pl</h1>
+  <p class="pod">Tu piszesz kod strony ręcznie: HTML, CSS i JavaScript, z podglądem obok. Z kluczem pisarza Twoja zmiana trafia jako propozycja do gospodarza strony, który ją scala. Nic nie zmienia się publicznie bez jego zgody.</p>
+  <label for="klucz">Klucz</label>
+  <input id="klucz" type="password" placeholder="wklej klucz pisarza (albo redakcji)" autocomplete="off">
+  <label for="autor">Twoje imię albo nick (zostanie w historii zmian)</label>
+  <input id="autor" maxlength="40" placeholder="np. Marta z domku 12">
+  <button id="start" style="margin-top:14px">Otwórz warsztat</button>
+  <p id="info-log"></p>
+</section>
+
+<section id="warsztat">
+  <div id="pasek">
+    <span class="tytul">index.html <small id="rola-info"></small></span>
+    <button class="cichy" id="btn-odswiez" title="Pobierz jeszcze raz aktualny kod z GitHuba (porzuca Twoje zmiany)">⟳ Z GitHuba</button>
+    <button class="cichy" id="btn-szukaj" title="Ctrl+F">🔍 Szukaj</button>
+    <button id="btn-wyslij" disabled>📮 Wyślij do gospodarza</button>
+    <button class="zielony" id="btn-publikuj" hidden disabled>🚀 Opublikuj od razu</button>
+  </div>
+  <div id="status"></div>
+  <div id="glowne">
+    <div id="kod"></div>
+    <div id="prawa">
+      <div id="zakladki">
+        <button data-z="podglad" class="aktywna">Podgląd</button>
+        <button data-z="zmiany">Zmiany <span id="licznik-zmian"></span></button>
+        <button data-z="pomoc">Pomoc</button>
+      </div>
+      <div id="panele">
+        <div id="p-podglad" class="aktywna"><iframe id="podglad" title="Podgląd strony" sandbox="allow-scripts allow-same-origin allow-popups"></iframe></div>
+        <div id="p-zmiany"><div id="zmiany"></div></div>
+        <div id="p-pomoc" style="padding:16px 20px;line-height:1.55">
+          <h3 style="margin-top:0">Jak to działa</h3>
+          <ul>
+            <li>Po lewej jest cały plik <code>index.html</code> strony: treść, style w <code>&lt;style&gt;</code> i skrypt tablicy na końcu. Edytujesz jak w zwykłym edytorze kodu. <b>Ctrl+F</b> szuka, <b>Ctrl+Z</b> cofa.</li>
+            <li><b>Podgląd</b> odświeża się po chwili od ostatniej zmiany. Tablica w podglądzie łączy się z prawdziwym API, więc nie dodawaj tam kartek na próbę.</li>
+            <li><b>Zmiany</b> pokazuje różnicę między Twoim kodem a wersją opublikowaną. Zielone dodane, czerwone usunięte. Zajrzyj tu przed wysłaniem.</li>
+            <li><b>Bot</b> na dole: opisz zmianę po polsku, bot wstawi ją do kodu po lewej. Możesz potem poprawić ręcznie.</li>
+            <li><b>Wyślij do gospodarza</b> zakłada gałąź <code>pisarz/...</code> i pull request na GitHubie. Gospodarz obejrzy i scali. Po scaleniu strona odświeża się w ciągu minuty.</li>
+            <li>Z kluczem redakcji jest też <b>Opublikuj od razu</b>: commit prosto na stronę, bez czekania.</li>
+          </ul>
+          <h3>Czego nie ruszać bez rozmowy</h3>
+          <ul>
+            <li>Elementów z id <code>deska, chipy, licznik-kartek, btn-podeslij, dialog-kartka, btn-powies, btn-anuluj, form-kartka, odwiedziny</code>. To tablica sąsiedzka.</li>
+            <li>Bloku <code>&lt;script&gt;</code> na końcu pliku, chyba że wiesz co robisz.</li>
+            <li>Tekstu sekcji „O nas”: to oficjalny tekst Inicjatywy.</li>
+          </ul>
+          <p>Ton strony: jak sąsiad do sąsiada, krótkie zdania, polskie znaki, bez myślników. Osoby tylko za zgodą, dzieci nigdy. Reszta zasad w <a href="https://github.com/gicaking/osiedle-przyjazn/blob/master/CONTRIBUTING.md" target="_blank" rel="noopener">CONTRIBUTING.md</a>.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="bot">
+    <textarea id="polecenie" placeholder="Poproś bota, np.: dodaj do Historii rok 2024, wpis do rejestru zabytków 7 listopada (MWKZ)"></textarea>
+    <button id="btn-bot">🤖 Poproś bota</button>
+    <span class="info">Bot zmienia kod po lewej, nie stronę. Wynik sprawdź w Zmianach i wyślij jak własną zmianę.</span>
+  </div>
+</section>
+
+<dialog id="dlg">
+  <h3 id="dlg-tytul" style="margin:0">Wyślij do gospodarza</h3>
+  <p id="dlg-pod" style="margin:6px 0 0;opacity:.75"></p>
+  <label for="dlg-opis">Co zmieniasz (jedno zdanie, trafi do historii)</label>
+  <input id="dlg-opis" maxlength="120" placeholder="np. Poprawiam rok zamknięcia Karuzeli">
+  <div id="dlg-uwagi"></div>
+  <div class="przyciski">
+    <button class="cichy" id="dlg-anuluj" type="button">Anuluj</button>
+    <button id="dlg-ok" type="button">Wyślij</button>
+  </div>
+</dialog>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/mode/xml/xml.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/mode/javascript/javascript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/mode/css/css.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/mode/htmlmixed/htmlmixed.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/addon/dialog/dialog.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/addon/search/searchcursor.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/addon/search/search.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/addon/search/jump-to-line.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsdiff/5.2.0/diff.min.js"></script>
+<script>
+(function(){
+  const $ = id => document.getElementById(id);
+  const API = location.origin;
+  const STRONA = 'https://osiedleprzyjazn.waw.pl/';
+  let klucz = '', autor = '', rola = '', oryginal = '', cm = null, brudne = false, timerPodglad = null, tryb = 'pr';
+
+  // ---------- logowanie ----------
+  $('klucz').value = localStorage.getItem('klucz_pisarza') || localStorage.getItem('klucz_redakcji') || '';
+  $('autor').value = localStorage.getItem('pisarz_autor') || '';
+  $('start').onclick = start;
+  ['klucz', 'autor'].forEach(id => $(id).addEventListener('keydown', e => { if (e.key === 'Enter') start(); }));
+
+  async function api(sciezka, body) {
+    const r = await fetch(API + sciezka, { method: body ? 'POST' : 'GET', headers: { 'Content-Type': 'application/json', 'X-Admin-Key': klucz }, body: body ? JSON.stringify(body) : undefined });
+    const d = await r.json().catch(() => ({ blad: 'Serwer odpowiedział nie-JSON (' + r.status + ').' }));
+    if (!r.ok || d.blad) { const e = new Error(d.blad || ('Błąd ' + r.status)); e.status = r.status; e.dane = d; throw e; }
+    return d;
+  }
+  function status(txt, klasa) { $('status').textContent = txt || ''; $('status').className = klasa || ''; }
+
+  async function start() {
+    klucz = $('klucz').value.trim(); autor = $('autor').value.trim();
+    const info = $('info-log');
+    if (!klucz) { info.className = 'blad'; info.textContent = 'Wklej klucz.'; return; }
+    if (!autor) { info.className = 'blad'; info.textContent = 'Wpisz imię albo nick, żeby było wiadomo, kto zmienia.'; return; }
+    info.className = ''; info.textContent = 'Pobieram aktualny kod strony…';
+    try {
+      const d = await api('/redakcja/zrodlo');
+      localStorage.setItem('klucz_pisarza', klucz); localStorage.setItem('pisarz_autor', autor);
+      rola = d.rola || 'pisarz';
+      oryginal = d.html;
+      $('logowanie').style.display = 'none'; $('warsztat').style.display = 'flex';
+      $('rola-info').textContent = rola === 'pisarz' ? '· klucz pisarza: zmiany idą do gospodarza jako pull request' : '· klucz ' + rola + ': możesz publikować od razu';
+      if (rola !== 'pisarz') $('btn-publikuj').hidden = false;
+      zbudujEdytor(d.html);
+      odswiezPodglad();
+      status('Załadowano aktualną wersję ze strony. Edytuj po lewej.', 'ok');
+    } catch (e) { info.className = 'blad'; info.textContent = e.message; }
+  }
+
+  // ---------- edytor ----------
+  function zbudujEdytor(html) {
+    if (cm) { cm.setValue(html); cm.clearHistory(); ustawBrudne(false); return; }
+    cm = CodeMirror($('kod'), { value: html, mode: 'htmlmixed', lineNumbers: true, lineWrapping: true, indentUnit: 2, tabSize: 2, extraKeys: { 'Ctrl-S': () => $('btn-wyslij').click(), 'Cmd-S': () => $('btn-wyslij').click() } });
+    cm.on('change', () => { ustawBrudne(cm.getValue() !== oryginal); zaplanujPodglad(); if (aktywna === 'zmiany') pokazZmiany(); });
+  }
+  function ustawBrudne(b) {
+    brudne = b;
+    $('btn-wyslij').disabled = !b; $('btn-publikuj').disabled = !b;
+    const n = b ? liczZmiany() : null;
+    $('licznik-zmian').textContent = n ? '(+' + n.plus + ' −' + n.minus + ')' : '';
+  }
+  window.addEventListener('beforeunload', e => { if (brudne) { e.preventDefault(); e.returnValue = ''; } });
+
+  $('btn-odswiez').onclick = async () => {
+    if (brudne && !confirm('Porzucić Twoje niewysłane zmiany i pobrać kod z GitHuba?')) return;
+    status('Pobieram…');
+    try { const d = await api('/redakcja/zrodlo'); oryginal = d.html; zbudujEdytor(d.html); odswiezPodglad(); status('Pobrano aktualną wersję.', 'ok'); }
+    catch (e) { status(e.message, 'blad'); }
+  };
+  $('btn-szukaj').onclick = () => cm && cm.execCommand('find');
+
+  // ---------- zakładki ----------
+  let aktywna = 'podglad';
+  document.querySelectorAll('#zakladki button').forEach(b => b.onclick = () => {
+    aktywna = b.dataset.z;
+    document.querySelectorAll('#zakladki button').forEach(x => x.classList.toggle('aktywna', x === b));
+    document.querySelectorAll('#panele>div').forEach(p => p.classList.toggle('aktywna', p.id === 'p-' + aktywna));
+    if (aktywna === 'zmiany') pokazZmiany();
+    if (aktywna === 'podglad') odswiezPodglad();
+  });
+
+  // ---------- podgląd ----------
+  function zaplanujPodglad() { clearTimeout(timerPodglad); timerPodglad = setTimeout(() => { if (aktywna === 'podglad') odswiezPodglad(); }, 900); }
+  function odswiezPodglad() {
+    if (!cm) return;
+    let html = cm.getValue();
+    html = html.replace(/<head>/i, '<head><base href="' + STRONA + '">');
+    $('podglad').srcdoc = html;
+  }
+
+  // ---------- diff ----------
+  function liczZmiany() {
+    const czesci = Diff.diffLines(oryginal, cm.getValue());
+    let plus = 0, minus = 0;
+    czesci.forEach(c => { if (c.added) plus += c.count; else if (c.removed) minus += c.count; });
+    return { plus, minus };
+  }
+  function esc(s) { return String(s).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c])); }
+  function pokazZmiany() {
+    if (!cm) return;
+    const czesci = Diff.diffLines(oryginal, cm.getValue());
+    if (!czesci.some(c => c.added || c.removed)) { $('zmiany').innerHTML = '<p class="pod">Brak zmian względem opublikowanej strony.</p>'; return; }
+    const KONTEKST = 2; let out = []; let linia = 0;
+    czesci.forEach((c, i) => {
+      const linie = c.value.replace(/\n$/, '').split('\n');
+      if (c.added) { linie.forEach(l => out.push('<div class="plus">+ ' + esc(l) + '</div>')); return; }
+      if (c.removed) { linie.forEach(l => out.push('<div class="minus">− ' + esc(l) + '</div>')); linia += linie.length; return; }
+      const przed = i > 0, po = i < czesci.length - 1;
+      let pokaz = [];
+      if (przed) pokaz = pokaz.concat(linie.slice(0, KONTEKST).map(l => '<div>  ' + esc(l) + '</div>'));
+      if (linie.length > KONTEKST * 2 && przed && po) pokaz.push('<div class="sep">… ' + (linie.length - KONTEKST * 2) + ' linii bez zmian (od linii ' + (linia + KONTEKST + 1) + ') …</div>');
+      else if (linie.length > KONTEKST && !(przed && po)) pokaz.push('<div class="sep">… ' + (linie.length - KONTEKST) + ' linii bez zmian …</div>');
+      if (po) pokaz = pokaz.concat(linie.slice(Math.max(KONTEKST, linie.length - KONTEKST)).map(l => '<div>  ' + esc(l) + '</div>'));
+      out = out.concat(pokaz); linia += linie.length;
+    });
+    const n = liczZmiany();
+    $('zmiany').innerHTML = '<p class="pod">Dodane linie: ' + n.plus + ', usunięte: ' + n.minus + '. Zielone trafią na stronę, czerwone znikną.</p>' + out.join('');
+  }
+
+  // ---------- bot ----------
+  $('btn-bot').onclick = async () => {
+    const polecenie = $('polecenie').value.trim();
+    if (polecenie.length < 5) { status('Napisz botowi, co zmienić.', 'blad'); return; }
+    $('btn-bot').disabled = true; status('Bot czyta cały kod i proponuje zmianę… (10 do 40 sekund)');
+    try {
+      const d = await api('/redakcja/bot-html', { html: cm.getValue(), polecenie });
+      if (d.pytanie) { status('Bot pyta: ' + d.pytanie, 'blad'); return; }
+      const kursor = cm.getCursor();
+      cm.replaceRange(d.html, { line: 0, ch: 0 }, { line: cm.lineCount(), ch: 0 });
+      cm.setCursor(kursor);
+      $('polecenie').dataset.opis = d.opis || polecenie;
+      status('Bot wstawił zmianę (' + d.edycje + ' ' + (d.edycje === 1 ? 'edycja' : 'edycji') + ', ' + d.model + '): ' + (d.opis || '') + ' Sprawdź w Zmianach, potem wyślij.', 'ok');
+      document.querySelector('#zakladki button[data-z="zmiany"]').click();
+    } catch (e) { status('Bot: ' + e.message, 'blad'); }
+    finally { $('btn-bot').disabled = false; }
+  };
+
+  // ---------- wysyłka ----------
+  function otworzDialog(t) {
+    tryb = t;
+    $('dlg-tytul').textContent = t === 'pr' ? 'Wyślij do gospodarza' : 'Opublikuj od razu';
+    $('dlg-pod').textContent = t === 'pr' ? 'Powstanie pull request na GitHubie. Gospodarz obejrzy zmianę i scali ją na stronę.' : 'Commit trafi prosto na stronę. Za minutę będzie publicznie widoczny.';
+    $('dlg-ok').textContent = t === 'pr' ? 'Wyślij' : 'Opublikuj';
+    $('dlg-opis').value = $('polecenie').dataset.opis || '';
+    const n = liczZmiany();
+    $('dlg-uwagi').innerHTML = '<p style="margin:10px 0 0;opacity:.75">Linie: +' + n.plus + ' −' + n.minus + '. Autor: ' + esc(autor) + '.</p>';
+    $('dlg').showModal(); $('dlg-opis').focus();
+  }
+  $('btn-wyslij').onclick = () => brudne && otworzDialog('pr');
+  $('btn-publikuj').onclick = () => brudne && otworzDialog('master');
+  $('dlg-anuluj').onclick = () => $('dlg').close();
+  $('dlg-opis').addEventListener('keydown', e => { if (e.key === 'Enter') $('dlg-ok').click(); });
+  $('dlg-ok').onclick = async () => {
+    const opis = $('dlg-opis').value.trim();
+    if (opis.length < 5) { $('dlg-opis').focus(); return; }
+    $('dlg-ok').disabled = true;
+    try {
+      if (tryb === 'pr') {
+        const d = await api('/redakcja/pisarz/wyslij', { html: cm.getValue(), opis, autor });
+        $('dlg').close();
+        const link = d.pr ? '<a href="' + d.pr + '" target="_blank" rel="noopener">pull request</a>' : '<a href="' + d.porownaj + '" target="_blank" rel="noopener">porównaj i otwórz PR</a>';
+        $('status').innerHTML = '<span class="ok">Wysłano do gospodarza</span> (gałąź ' + esc(d.galaz) + ', commit ' + esc(d.krotki) + '): ' + link + '.' + (d.uwagi.length ? ' <span class="blad">Kontrola zgłasza: ' + esc(d.uwagi.join(' ')) + '</span>' : '') + (d.info ? ' ' + esc(d.info) : '');
+        $('status').className = '';
+        oryginal = cm.getValue(); ustawBrudne(false); $('polecenie').dataset.opis = '';
+        $('status').innerHTML += ' Dalsze zmiany pójdą jako nowa propozycja.';
+      } else {
+        let d;
+        try { d = await api('/redakcja/publikuj-html', { html: cm.getValue(), opis }); }
+        catch (e) {
+          if (e.status === 422 && confirm(e.message + '\n\nOpublikować mimo to?')) d = await api('/redakcja/publikuj-html', { html: cm.getValue(), opis, wymus: true });
+          else throw e;
+        }
+        $('dlg').close();
+        $('status').innerHTML = '<span class="ok">Opublikowano</span>, commit <a href="' + d.url + '" target="_blank" rel="noopener">' + esc(d.krotki) + '</a>. Strona odświeży się w ciągu minuty.';
+        $('status').className = '';
+        oryginal = cm.getValue(); ustawBrudne(false); $('polecenie').dataset.opis = '';
+      }
+    } catch (e) { $('dlg').close(); status(e.message, 'blad'); }
+    finally { $('dlg-ok').disabled = false; }
+  };
+})();
+</script>
+</body></html>

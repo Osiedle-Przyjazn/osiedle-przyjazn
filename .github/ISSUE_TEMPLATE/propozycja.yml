@@ -1,0 +1,43 @@
+name: Propozycja zmiany
+description: Coś do poprawienia lub dopisania na stronie osiedla. Nie trzeba znać kodu.
+title: "[Zmiana] "
+labels: ["propozycja"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Dzięki, że chcesz coś zmienić. Wystarczy odpowiedzieć na trzy pytania poniżej. Gospodarz strony odpisze w tym wątku.
+  - type: dropdown
+    id: gdzie
+    attributes:
+      label: Gdzie na stronie?
+      options:
+        - Historia (oś czasu)
+        - Ludzie stąd
+        - Tablica sąsiedzka
+        - Kuźnia pomysłów
+        - Przyjaźń w sieci (linki)
+        - Stopka / ogólne
+        - Nie wiem, opiszę niżej
+    validations:
+      required: true
+  - type: textarea
+    id: co
+    attributes:
+      label: Co zmienić lub dopisać?
+      description: Jeśli masz gotowy tekst, wklej go tutaj. Jeśli poprawiasz fakt, napisz skąd wiesz (źródło).
+      placeholder: "Np. W sekcji Historia przy roku 1955 jest „3 tysiące studentów”, według książki X było ich 2,5 tysiąca."
+    validations:
+      required: true
+  - type: textarea
+    id: dlaczego
+    attributes:
+      label: Dlaczego? (nieobowiązkowe)
+      placeholder: "Jedno zdanie wystarczy."
+  - type: checkboxes
+    id: zgody
+    attributes:
+      label: Potwierdzenie
+      options:
+        - label: Jeśli wspominam konkretne osoby, mam ich zgodę.
+          required: false

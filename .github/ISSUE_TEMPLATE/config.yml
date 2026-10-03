@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Zobacz stronę
+    url: https://osiedleprzyjazn.waw.pl/
+    about: Żywa strona osiedla. Tablica sąsiedzka też przyjmuje wiadomości do gospodarza strony.
+  - name: Jak zmienić stronę samemu
+    url: https://github.com/gicaking/osiedle-przyjazn/blob/master/CONTRIBUTING.md
+    about: Trzy drogi, od najprostszej po pełną.

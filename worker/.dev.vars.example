@@ -1,4 +1,6 @@
 # Skopiuj do .dev.vars (plik ignorowany przez git) do testów lokalnych: npx wrangler dev
 ADMIN_KEY=test
+REDAKCJA_KEY=test-redakcja
+PISARZ_KEY=test-pisarz
 GITHUB_TOKEN=github_pat_...
 ANTHROPIC_API_KEY=sk-ant-...

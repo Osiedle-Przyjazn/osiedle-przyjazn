@@ -3,6 +3,7 @@
 
 import { redakcja } from './redakcja.js';
 import { edytorStrony } from './edytor.js';
+import { pisarzStrony } from './pisarz.js';
 
 const KATEGORIE = ['wydarzenie', 'wymiana', 'szukam', 'polecam', 'inne'];
 const LIMITY = { tytul: 60, tresc: 400, podpis: 40, kontakt: 80 };
@@ -92,6 +93,10 @@ export default {
     // /edytor — klikalny edytor strony (klucz sprawdza dopiero API pod /redakcja)
     const ed = edytorStrony(req, path);
     if (ed) return ed;
+
+    // /pisarz — edytor kodu w przeglądarce (klucz sprawdza API pod /redakcja; klucz pisarza = tylko pull request)
+    const pis = pisarzStrony(req, path);
+    if (pis) return pis;
 
     // /redakcja — panel administratora z botem (klucz sprawdza moduł)
     if (path === '/redakcja' || path.startsWith('/redakcja/')) {
