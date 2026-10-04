@@ -28,3 +28,9 @@ Strona https://osiedleprzyjazn.waw.pl (Warszawa, Bemowo, Jelonki). Repo `Osiedle
 ## Testowanie lokalne
 
 `python3 -m http.server 8000` w katalogu repo. Uwaga: lokalna kopia gada z produkcyjnym API tablicy, więc testowe kartki są prawdziwe (zdejmuje panel `/gospodarz`).
+
+## Widoczność w wyszukiwarkach (od 2026-10-04)
+
+- **Google Search Console:** usługa domenowa `osiedleprzyjazn.waw.pl` na koncie gicaking, weryfikacja rekordem TXT `google-site-verification=…` w Cloudflare DNS (NIE kasować). Sitemapa zgłoszona, strona główna wysłana do indeksowania (4.10.2026 nie było jej w indeksie).
+- **Bing i Yandex przez IndexNow** (bez konta): klucz w pliku `9dcf85ca2344a97d3b0eae9572b80294.txt` w katalogu głównym (NIE kasować). Po większej zmianie treści ping: `curl -X POST https://api.indexnow.org/indexnow -H 'Content-Type: application/json' -d '{"host":"osiedleprzyjazn.waw.pl","key":"9dcf85ca2344a97d3b0eae9572b80294","urlList":["https://osiedleprzyjazn.waw.pl/"]}'`
+- `sitemap.xml` celowo bez `lastmod` (nieaktualna data szkodzi bardziej niż brak). JSON-LD: Organization, Place (z `geo`), WebSite.
