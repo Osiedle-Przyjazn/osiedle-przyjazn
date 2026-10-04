@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Inicjatywa Osiedle Przyjaźń</title>
-<meta name="description" content="Inicjatywa Osiedle Przyjaźń skupia mieszkańców i sympatyków zabytkowego drewnianego osiedla na warszawskim Bemowie. Historia, ludzie, postulaty, tablica sąsiedzka, kontakt i spotkania.">
+<title>Inicjatywa Osiedle Przyjaźń: drewniane osiedle na Bemowie</title>
+<meta name="description" content="Inicjatywa Osiedle Przyjaźń skupia mieszkańców i sympatyków zabytkowego drewnianego osiedla na Jelonkach, na warszawskim Bemowie. Historia domków fińskich, ludzie, postulaty, tablica sąsiedzka, kontakt i spotkania.">
 <link rel="canonical" href="https://osiedleprzyjazn.waw.pl/">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="pl_PL">
@@ -31,7 +31,10 @@
       "logo": "https://osiedleprzyjazn.waw.pl/img/logo.png",
       "email": "inicjatywa.op@gmail.com",
       "foundingDate": "2012",
-      "areaServed": "Warszawa, Bemowo",
+      "@id": "https://osiedleprzyjazn.waw.pl/#inicjatywa",
+      "description": "Mieszkańcy i sympatycy zabytkowego drewnianego Osiedla Przyjaźń na warszawskim Bemowie, działający razem od 2012 roku.",
+      "areaServed": "Warszawa, Bemowo, Jelonki",
+      "location": { "@id": "https://osiedleprzyjazn.waw.pl/#osiedle" },
       "sameAs": [
         "https://www.facebook.com/InicjatywaOsiedlePrzyjazn",
         "https://www.instagram.com/inicjatywa_osiedle_przyjazn",
@@ -40,16 +43,28 @@
     },
     {
       "@type": "Place",
+      "@id": "https://osiedleprzyjazn.waw.pl/#osiedle",
       "name": "Osiedle Przyjaźń",
-      "alternateName": "Osiedle Przyjaźń Jelonki",
+      "alternateName": ["Osiedle Przyjaźń Jelonki", "Domki fińskie na Bemowie"],
       "description": "Zabytkowe drewniane osiedle z 1952 roku na warszawskim Bemowie. Wpisane do rejestru zabytków 7 listopada 2024 roku.",
       "address": {
         "@type": "PostalAddress",
         "addressLocality": "Warszawa",
         "addressRegion": "mazowieckie",
+        "postalCode": "01-459",
         "addressCountry": "PL"
       },
+      "geo": { "@type": "GeoCoordinates", "latitude": 52.2375, "longitude": 20.9190 },
+      "hasMap": "https://www.openstreetmap.org/?mlat=52.2375&mlon=20.9190#map=16/52.2375/20.9190",
+      "containedInPlace": { "@type": "Place", "name": "Jelonki, Bemowo, Warszawa" },
       "url": "https://osiedleprzyjazn.waw.pl/"
+    },
+    {
+      "@type": "WebSite",
+      "name": "Inicjatywa Osiedle Przyjaźń",
+      "url": "https://osiedleprzyjazn.waw.pl/",
+      "inLanguage": "pl-PL",
+      "publisher": { "@id": "https://osiedleprzyjazn.waw.pl/#inicjatywa" }
     }
   ]
 }
@@ -488,7 +503,7 @@
       <div class="sztacheta reveal">
         <span class="rok">1952</span>
         <h3>Domki dla budowniczych Pałacu Kultury</h3>
-        <p>Na czterdziestu hektarach Jelonek stają drewniane pawilony i domki jednorodzinne dla radzieckich robotników budujących Pałac Kultury i Nauki. W szczytowym momencie mieszka tu 4,5 tysiąca osób. Wokół rośnie 4 tysiące drzew i 40 tysięcy krzewów, a osiedle ma własne kino, klub, łaźnię i przychodnię.</p>
+        <p>Na czterdziestu hektarach Jelonek stają drewniane pawilony i parterowe domki, nazywane potocznie domkami fińskimi. Mieszkają w nich radzieccy robotnicy budujący Pałac Kultury i Nauki. W szczytowym momencie mieszka tu 4,5 tysiąca osób. Wokół rośnie 4 tysiące drzew i 40 tysięcy krzewów, a osiedle ma własne kino, klub, łaźnię i przychodnię.</p>
       </div>
       <div class="sztacheta reveal">
         <span class="rok">1955</span>
