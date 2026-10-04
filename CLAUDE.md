@@ -1,6 +1,6 @@
 # osiedle_przyjazn — oficjalna strona Inicjatywy Osiedle Przyjaźń
 
-Strona https://osiedleprzyjazn.waw.pl (Warszawa, Bemowo, Jelonki). Repo `gicaking/osiedle-przyjazn`, branch `master`. Od 2026-09-19 strona jest oficjalną stroną Inicjatywy Osiedle Przyjaźń (wcześniej strona sąsiedzka). Motyw: własny, drewniano-zielony (NIE kopia Facebooka, Andrzej to odrzucił). Głównym motywem graficznym jest logo Inicjatywy `img/logo.png` (naklejka w hero, wizytówka w O nas, nav, stopka, favicon).
+Strona https://osiedleprzyjazn.waw.pl (Warszawa, Bemowo, Jelonki). Repo `Osiedle-Przyjazn/osiedle-przyjazn`, branch `master`. Od 2026-09-19 strona jest oficjalną stroną Inicjatywy Osiedle Przyjaźń (wcześniej strona sąsiedzka). Motyw: własny, drewniano-zielony (NIE kopia Facebooka, Andrzej to odrzucił). Głównym motywem graficznym jest logo Inicjatywy `img/logo.png` (naklejka w hero, wizytówka w O nas, nav, stopka, favicon).
 
 ## Architektura
 

@@ -28,7 +28,7 @@ Robiona po godzinach i z serca. **Chcesz coś zmienić albo dopisać? Zobacz [CO
 Strona to statyczny HTML, więc wystarczy:
 
 ```bash
-git clone https://github.com/gicaking/osiedle-przyjazn.git
+git clone https://github.com/Osiedle-Przyjazn/osiedle-przyjazn.git
 cd osiedle-przyjazn
 python3 -m http.server 8000     # albo po prostu otwórz index.html w przeglądarce
 ```

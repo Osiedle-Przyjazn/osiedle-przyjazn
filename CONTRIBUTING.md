@@ -7,7 +7,7 @@ Ta strona jest sąsiedzka, więc sąsiedzi mogą ją współtworzyć. Nie trzeba
 Masz poprawkę do historii, nowe wydarzenie do „Przyjaźń w sieci”, literówkę, pomysł do Kuźni? Wystarczy opisać.
 
 1. Załóż darmowe konto na GitHubie (jeśli nie masz): https://github.com/signup
-2. Wejdź tu: **https://github.com/gicaking/osiedle-przyjazn/issues/new/choose** i wybierz „Propozycja zmiany”.
+2. Wejdź tu: **https://github.com/Osiedle-Przyjazn/osiedle-przyjazn/issues/new/choose** i wybierz „Propozycja zmiany”.
 3. Napisz **co** i **gdzie** (np. „w sekcji Historia, rok 1955, zamiast X powinno być Y”). Jeśli masz gotowy tekst, wklej go.
 
 Gospodarz strony wprowadzi zmianę i odpisze w tym samym wątku. Zwykle w ciągu kilku dni.
@@ -18,7 +18,7 @@ Bez konta GitHub? Powieś kartkę na [Tablicy sąsiedzkiej](https://osiedleprzyj
 
 Dla osób, które chcą same poprawić tekst. GitHub ma wbudowany edytor.
 
-1. Zaloguj się na GitHub i otwórz plik: **https://github.com/gicaking/osiedle-przyjazn/blob/master/index.html**
+1. Zaloguj się na GitHub i otwórz plik: **https://github.com/Osiedle-Przyjazn/osiedle-przyjazn/blob/master/index.html**
 2. Kliknij ikonę ołówka („Edit this file”). GitHub sam zrobi Twoją kopię (fork), nie zepsujesz niczego na żywej stronie.
 3. Znajdź fragment do zmiany (Ctrl+F po tekście, który widzisz na stronie). Treść jest w tym samym pliku co style, więc zmieniaj tylko to, co rozumiesz. Tekst między `<p>` a `</p>`, nagłówki między `<h2>`/`<h3>`.
 4. Kliknij „Commit changes”, wpisz jednym zdaniem, co zmieniasz (np. „Poprawiam rok wprowadzenia się studentów”).
@@ -56,7 +56,7 @@ Klucz traktuj jak hasło. Jeśli wycieknie, napisz do gospodarza, wymiana trwa m
 ## Droga 3: pełna (dla osób znających git)
 
 ```bash
-git clone https://github.com/gicaking/osiedle-przyjazn.git   # albo swój fork
+git clone https://github.com/Osiedle-Przyjazn/osiedle-przyjazn.git   # albo swój fork
 cd osiedle-przyjazn
 git checkout -b moja-zmiana
 # edytuj index.html, sprawdź w przeglądarce (python3 -m http.server 8000)

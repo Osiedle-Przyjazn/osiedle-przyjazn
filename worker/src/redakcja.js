@@ -5,7 +5,7 @@
 import { edytorApi } from './edytor.js';
 import { pisarzApi, PISARZ_DOZWOLONE } from './pisarz.js';
 
-const GH = { owner: 'gicaking', repo: 'osiedle-przyjazn', branch: 'master', plik: 'index.html' };
+const GH = { owner: 'Osiedle-Przyjazn', repo: 'osiedle-przyjazn', branch: 'master', plik: 'index.html' };
 const MODEL = 'claude-opus-5';
 const MODEL_ZAPASOWY = '@cf/meta/llama-3.3-70b-instruct-fp8-fast';
 const WYMAGANE_ID = ['deska', 'chipy', 'licznik-kartek', 'btn-podeslij', 'dialog-kartka', 'btn-powies', 'btn-anuluj', 'form-kartka', 'odwiedziny'];
